@@ -1,0 +1,29 @@
+const express = require("express");
+const { createServer } = require("http");
+const { Socket } = require("socket.io");
+const app = express();
+const server = createServer(app);
+const io = require("socket.io")(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"],
+  },
+});
+
+io.on("connection", (socket) => {
+  socket.on("client-connected", (message) => {
+    const client = message.clientId;
+    const room = message.roomId;
+    console.log(`user ${client} to room ${room}`);
+    socket.join(room);
+    socket.broadcast
+      .to(room)
+      .emit("user-connected", `user ${client} has joined the room`);
+  });
+});
+
+const PORT = process.env.PORT || 5000;
+
+server.listen(PORT, () => {
+  console.log(`Server started at http://localhost:${PORT}`);
+});
