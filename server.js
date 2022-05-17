@@ -10,15 +10,17 @@ const io = require("socket.io")(server, {
   },
 });
 
-io.on("connection", (socket) => {
-  socket.on("client-connected", (message) => {
-    const client = message.clientId;
-    const room = message.roomId;
-    console.log(`user ${client} to room ${room}`);
-    socket.join(room);
-    socket.broadcast
-      .to(room)
-      .emit("user-connected", `user ${client} has joined the room`);
+app.get("/socket.io", (req, res) => {
+  io.on("connection", (socket) => {
+    socket.on("client-connected", (message) => {
+      const client = message.clientId;
+      const room = message.roomId;
+      console.log(`user ${client} to room ${room}`);
+      socket.join(room);
+      socket.broadcast
+        .to(room)
+        .emit("user-connected", `user ${client} has joined the room`);
+    });
   });
 });
 
