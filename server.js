@@ -12,8 +12,6 @@ const io = require("socket.io")(server, {
 
 io.on("connection", (socket) => {
   socket.on("client-connected", (message) => {
-    // const client = message.clientId;
-    // const room = message.roomId;
     const connection = {
       roomId: message.roomId,
       roomName: message.roomName,
@@ -21,6 +19,9 @@ io.on("connection", (socket) => {
       clientId: message.clientId,
       clientName: message.clientName,
     };
+    if (!connection.roomName) {
+      socket.to(connection.roomId).emit("room-name", connection.roomName);
+    }
     console.log(connection);
     socket.join(connection.roomId);
     socket.broadcast
