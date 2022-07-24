@@ -22,9 +22,9 @@ io.on("connection", (socket) => {
       clientName: message.clientName,
     };
     console.log(connection);
-    socket.join(room);
+    socket.join(connection.roomId);
     socket.broadcast
-      .to(room)
+      .to(connection.roomId)
       .emit(
         "user-connected",
         `user ${connection.clientId} username:${connection.clientName} has joined the room`
