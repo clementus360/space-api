@@ -19,10 +19,10 @@ const client = new MongoClient(uri, {
 });
 
 io.on("connection", (socket) => {
+
   socket.on("client-connected", (message) => {
-    const connection = {
-      roomId: message.roomId,
-      roomName: message.roomName,
+
+    const participant = {
       clientType: message.clientType,
       clientId: message.clientId,
       clientName: message.clientName,
@@ -30,30 +30,34 @@ io.on("connection", (socket) => {
 
     client.connect(async (err) => {
       const collection = client.db("Spacechat").collection("Rooms");
-      const participant = {
-        clientType: message.clientType,
-        clientId: message.clientId,
-        clientName: message.clientName,
-      };
-      const addRoom = await collection.insertOne({
-        roomId: message.roomId,
-        roomName: message.roomName,
-        participants: participants.push(participant),
-      });
+
+      if (!message.clientName) {
+        console.log('nope')
+      } else if(message.clientName) {
+
+        const addRoom = await collection.insertOne({
+          roomId: message.roomId,
+          roomName: message.roomName,
+          participants: [
+            participant
+          ],
+        });
+
+      }
       client.close();
     });
 
-    if (!connection.roomName) {
-      socket.to(connection.roomId).emit("room-name", connection.roomName);
+    if (!message.roomName) {
+      socket.to(message.roomId).emit("room-name", message.roomName);
     }
 
-    console.log(connection);
-    socket.join(connection.roomId);
+    console.log(message);
+    socket.join(message.roomId);
     socket.broadcast
-      .to(connection.roomId)
+      .to(message.roomId)
       .emit(
         "user-connected",
-        `user ${connection.clientId} username:${connection.clientName} has joined the room`
+        `user ${message.clientId} username:${message.clientName} has joined the room`
       );
   });
 });
