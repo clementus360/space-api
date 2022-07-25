@@ -28,7 +28,6 @@ io.on("connection", (socket) => {
 
     client.connect(async (err) => {
       const collection = client.db("Spacechat").collection("Rooms");
-      console.log(collection);
 
       if (!message.clientName) {
         console.log("nope");
