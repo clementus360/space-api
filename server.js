@@ -57,12 +57,11 @@ io.on("connection", (socket) => {
       clientId: message.clientId,
       clientName: message.clientName,
     };
-    console.log(message.clientName);
 
-    if (!message.clientName) {
+    if (!message.roomName) {
       addParticipant(message.roomId, participant);
       console.log("nope");
-    } else if (message.clientName) {
+    } else if (message.roomName) {
       const room = {
         roomId: message.roomId,
         roomName: message.roomName,
