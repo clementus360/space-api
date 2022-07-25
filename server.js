@@ -57,6 +57,7 @@ io.on("connection", (socket) => {
       clientId: message.clientId,
       clientName: message.clientName,
     };
+    console.log(message.clientName);
 
     if (!message.clientName) {
       addParticipant(message.roomId, participant);
