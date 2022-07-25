@@ -23,6 +23,8 @@ const addRoom = async (room) => {
     await client.connect();
     const collection = client.db("Cluster0").collection("Rooms");
     await collection.insertOne(room);
+  } catch (err) {
+    console.log(err);
   } finally {
     if (client) {
       await client.close();
