@@ -41,7 +41,7 @@ io.on("connection", (socket) => {
           participants: [
             participant
           ],
-        });
+        }).catch(err => console.log(err));
 
       }
       client.close();
