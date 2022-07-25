@@ -19,9 +19,7 @@ const client = new MongoClient(uri, {
 });
 
 io.on("connection", (socket) => {
-
   socket.on("client-connected", (message) => {
-
     const participant = {
       clientType: message.clientType,
       clientId: message.clientId,
@@ -30,19 +28,18 @@ io.on("connection", (socket) => {
 
     client.connect(async (err) => {
       const collection = client.db("Spacechat").collection("Rooms");
+      console.log(collection);
 
       if (!message.clientName) {
-        console.log('nope')
-      } else if(message.clientName) {
-
-        const addRoom = await collection.insertOne({
-          roomId: message.roomId,
-          roomName: message.roomName,
-          participants: [
-            participant
-          ],
-        }).catch(err => console.log(err));
-
+        console.log("nope");
+      } else if (message.clientName) {
+        const addRoom = await collection
+          .insertOne({
+            roomId: message.roomId,
+            roomName: message.roomName,
+            participants: [participant],
+          })
+          .catch((err) => console.log(err));
       }
       client.close();
     });
