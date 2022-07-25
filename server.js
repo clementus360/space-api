@@ -38,7 +38,7 @@ const addParticipant = async (roomId, participant) => {
     const collection = client.db("Cluster0").collection("Rooms");
     const currentRoom = await collection.findOneAndUpdate(
       { roomId: roomId },
-      { $set: { participants: participants.push(participant) } }
+      { $push: { participants: participant } }
     );
     console.log(currentRoom);
   } catch (err) {
