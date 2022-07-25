@@ -75,7 +75,6 @@ io.on("connection", (socket) => {
       socket.to(message.roomId).emit("room-name", message.roomName);
     }
 
-    console.log(message);
     socket.join(message.roomId);
     socket.broadcast
       .to(message.roomId)
