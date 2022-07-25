@@ -41,7 +41,7 @@ io.on("connection", (socket) => {
           })
           .catch((err) => console.log(err));
       }
-      client.close();
+      await client.close();
     });
 
     if (!message.roomName) {
