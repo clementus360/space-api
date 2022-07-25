@@ -18,6 +18,18 @@ const client = new MongoClient(uri, {
   serverApi: ServerApiVersion.v1,
 });
 
+const addRoom = async (room) => {
+  try {
+    await client.connect();
+    const collection = client.db("Cluster0").collection("Rooms");
+    await collection.insertOne(room);
+  } finally {
+    if (client) {
+      await client.close();
+    }
+  }
+};
+
 io.on("connection", (socket) => {
   socket.on("client-connected", (message) => {
     const participant = {
@@ -26,22 +38,16 @@ io.on("connection", (socket) => {
       clientName: message.clientName,
     };
 
-    client.connect(async (err) => {
-      const collection = client.db("Cluster0").collection("Rooms");
-
-      if (!message.clientName) {
-        console.log("nope");
-      } else if (message.clientName) {
-        const addRoom = await collection
-          .insertOne({
-            roomId: message.roomId,
-            roomName: message.roomName,
-            participants: [participant],
-          })
-          .catch((err) => console.log(err));
-      }
-      await client.close();
-    });
+    if (!message.clientName) {
+      console.log("nope");
+    } else if (message.clientName) {
+      const room = {
+        roomId: message.roomId,
+        roomName: message.roomName,
+        participants: [participant],
+      };
+      addRoom(room);
+    }
 
     if (!message.roomName) {
       socket.to(message.roomId).emit("room-name", message.roomName);
