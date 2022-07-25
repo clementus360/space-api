@@ -32,6 +32,28 @@ const addRoom = async (room) => {
   }
 };
 
+const addParticipant = async (roomId, participant) => {
+  try {
+    await client.connect();
+    const collection = client.db("Cluster0").collection("Rooms");
+    const currentRoom = await collection.findOneAndUpdate(
+      {
+        roomId: roomId,
+      },
+      {
+        participants: [...participant],
+      }
+    );
+    console.log(currentRoom);
+  } catch (err) {
+    console.log(err);
+  } finally {
+    if (client) {
+      await client.close();
+    }
+  }
+};
+
 io.on("connection", (socket) => {
   socket.on("client-connected", (message) => {
     const participant = {
@@ -41,6 +63,7 @@ io.on("connection", (socket) => {
     };
 
     if (!message.clientName) {
+      addParticipant(message.roomId, participant);
       console.log("nope");
     } else if (message.clientName) {
       const room = {
