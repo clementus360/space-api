@@ -36,7 +36,7 @@ const addParticipant = async (roomId, participant) => {
   try {
     await client.connect();
     const collection = client.db("Cluster0").collection("Rooms");
-    const currentRoom = await collection.update(
+    const currentRoom = await collection.updateOne(
       {
         roomId: roomId,
       },
