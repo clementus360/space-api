@@ -72,10 +72,6 @@ io.on("connection", (socket) => {
       addRoom(room);
     }
 
-    if (!message.roomName) {
-      socket.to(message.roomId).emit("room-name", message.roomName);
-    }
-
     socket.join(message.roomId);
     socket.broadcast
       .to(message.roomId)
