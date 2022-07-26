@@ -59,6 +59,8 @@ io.on("connection", (socket) => {
       clientName: message.clientName,
     };
 
+    socket.join(message.roomId);
+
     if (!message.roomName) {
       const getRoom = async () => {
         const room = await addParticipant(message.roomId, participant);
@@ -74,8 +76,6 @@ io.on("connection", (socket) => {
       };
       addRoom(room);
     }
-
-    socket.join(message.roomId);
     socket.broadcast
       .to(message.roomId)
       .emit(
