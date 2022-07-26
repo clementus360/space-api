@@ -63,8 +63,7 @@ io.on("connection", (socket) => {
       const getRoom = async () => {
         const room = await addParticipant(message.roomId, participant);
         console.log(room.value.roomName);
-        socket.to(room.roomId).emit("room-name", room.roomName);
-        console.log("nope");
+        socket.to(room.value.roomId).emit("room-name", room.value.roomName);
       };
       getRoom();
     } else if (message.roomName) {
