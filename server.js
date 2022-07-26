@@ -60,8 +60,7 @@ io.on("connection", (socket) => {
     };
 
     if (!message.roomName) {
-      const getRoom = async () =>
-        await addParticipant(message.roomId, participant);
+      const getRoom = addParticipant(message.roomId, participant);
       console.log(getRoom);
       socket.to(getRoom.roomId).emit("room-name", getRoom.roomName);
       console.log("nope");
