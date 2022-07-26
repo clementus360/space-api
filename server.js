@@ -60,10 +60,13 @@ io.on("connection", (socket) => {
     };
 
     if (!message.roomName) {
-      const getRoom = addParticipant(message.roomId, participant);
-      console.log(getRoom);
-      socket.to(getRoom.roomId).emit("room-name", getRoom.roomName);
-      console.log("nope");
+      const getRoom = async () => {
+        const room = await addParticipant(message.roomId, participant);
+        console.log(room);
+        socket.to(room.roomId).emit("room-name", room.roomName);
+        console.log("nope");
+      };
+      getRoom();
     } else if (message.roomName) {
       const room = {
         roomId: message.roomId,
