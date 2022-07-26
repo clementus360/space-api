@@ -33,14 +33,14 @@ const addRoom = async (room) => {
 };
 
 const addParticipant = async (roomId, participant) => {
+  let currentRoom;
   try {
     await client.connect();
     const collection = client.db("Cluster0").collection("Rooms");
-    const currentRoom = await collection.findOneAndUpdate(
+    currentRoom = await collection.findOneAndUpdate(
       { roomId: roomId },
       { $push: { participants: participant } }
     );
-    return currentRoom;
   } catch (err) {
     console.log(err);
   } finally {
@@ -48,6 +48,7 @@ const addParticipant = async (roomId, participant) => {
       await client.close();
     }
   }
+  return await currentRoom;
 };
 
 io.on("connection", (socket) => {
