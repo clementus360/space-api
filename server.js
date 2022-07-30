@@ -59,25 +59,23 @@ io.on("connection", (socket) => {
       clientName: message.clientName,
     };
 
-    socket.join(message.roomId);
+    socket.join(message.roomId).then(() => {
+      if (!message.roomName) {
+        const getRoom = async () => {
+          const room = await addParticipant(message.roomId, participant);
+          socket.to(room.value.roomId).emit("room-name", room.value.roomName);
+        };
+        getRoom();
+      } else if (message.roomName) {
+        const room = {
+          roomId: message.roomId,
+          roomName: message.roomName,
+          participants: [participant],
+        };
+        addRoom(room);
+      }
+    });
 
-    if (!message.roomName) {
-      const getRoom = async () => {
-        const room = await addParticipant(message.roomId, participant);
-        console.log(room.value.roomName);
-        console.log(room.value.roomId);
-        console.log(message.roomId);
-        socket.to(room.value.roomId).emit("room-name", room.value.roomName);
-      };
-      getRoom();
-    } else if (message.roomName) {
-      const room = {
-        roomId: message.roomId,
-        roomName: message.roomName,
-        participants: [participant],
-      };
-      addRoom(room);
-    }
     socket.broadcast
       .to(message.roomId)
       .emit(
