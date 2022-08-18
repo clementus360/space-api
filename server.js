@@ -21,7 +21,7 @@ const client = new MongoClient(uri, {
 });
 
 const tryal = async () => {
-  console.log(await createOffer());
+  console.log(await createOffers);
 };
 
 tryal();
