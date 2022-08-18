@@ -14,6 +14,7 @@ const peerConnection = new RTCPeerConnection(config);
 const createOffer = async () => {
   const offer = await peerConnection.createOffer();
   await peerConnection.setLocalDescription(offer);
+  console.log(offer);
   return offer;
 };
 
