@@ -10,7 +10,8 @@ const io = require("socket.io")(server, {
     methods: ["GET", "POST"],
   },
 });
-const { createOffer } = require("./WebRTC/WebRTC");
+
+import { createOffer } from "./WebRTC/WebRTC";
 
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const uri = process.env.DB_URL;
