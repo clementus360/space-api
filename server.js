@@ -10,6 +10,8 @@ const io = require("socket.io")(server, {
     methods: ["GET", "POST"],
   },
 });
+const { createOffer } = require("./WebRTC/WebRTC");
+
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const uri = process.env.DB_URL;
 const client = new MongoClient(uri, {
@@ -17,6 +19,12 @@ const client = new MongoClient(uri, {
   useUnifiedTopology: true,
   serverApi: ServerApiVersion.v1,
 });
+
+const tryal = async () => {
+  console.log(await createOffer());
+};
+
+tryal();
 
 const addRoom = async (room) => {
   try {
@@ -79,6 +87,7 @@ io.on("connection", (socket) => {
     socket.broadcast.to(message.roomId).emit("user-connected", {
       message: `user ${message.clientId} username:${message.clientName} has joined the room`,
       offer: message.offer,
+      x,
     });
   });
 });
