@@ -80,7 +80,6 @@ io.on("connection", (socket) => {
     socket.broadcast.to(message.roomId).emit("user-connected", {
       message: `user ${message.clientId} username:${message.clientName} has joined the room`,
       offer: message.offer,
-      x,
     });
   });
 });
