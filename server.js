@@ -6,11 +6,10 @@ const app = express();
 const server = createServer(app);
 const io = require("socket.io")(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "http://127.0.0.1:3000",
     methods: ["GET", "POST"],
   },
 });
-const createOffer = require("./WebRTC/WebRTC");
 
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const uri = process.env.DB_URL;
@@ -19,12 +18,6 @@ const client = new MongoClient(uri, {
   useUnifiedTopology: true,
   serverApi: ServerApiVersion.v1,
 });
-
-const tryal = async () => {
-  createOffer();
-};
-
-tryal();
 
 const addRoom = async (room) => {
   try {
