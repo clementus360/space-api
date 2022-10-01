@@ -11,6 +11,17 @@ const io = require("socket.io")(server, {
   },
 });
 
+const {
+  types,
+  version,
+  observer,
+  createWorker,
+  createRouter,
+  getSupportedRtpCapabilities,
+  parseScalabilityMode,
+} = require("mediasoup");
+
+// Connecting to MongoDB
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const uri = process.env.DB_URL;
 const client = new MongoClient(uri, {
@@ -19,6 +30,7 @@ const client = new MongoClient(uri, {
   serverApi: ServerApiVersion.v1,
 });
 
+// Room Socket Connections
 const addRoom = async (room) => {
   try {
     await client.connect();
@@ -83,6 +95,50 @@ io.on("connection", (socket) => {
     });
   });
 });
+
+// Mediasoup media server
+const mediaCodecs = [
+  {
+    kind: "audio",
+    mimeType: "audio/opus",
+    clockRate: 48000,
+    channels: 2,
+  },
+  {
+    kind: "video",
+    mimeType: "video/H264",
+    clockRate: 90000,
+    parameters: {
+      "packetization-mode": 1,
+      "profile-level-id": "42e01f",
+      "level-asymmetry-allowed": 1,
+    },
+  },
+];
+
+const wrtcConfig = {
+  listenInfos: [
+    {
+      protocol: "udp",
+      ip: "127.0.0.1",
+      port: 20000,
+    },
+    {
+      protocol: "tcp",
+      ip: "127.0.0.1",
+      port: 20000,
+    },
+  ],
+};
+
+async function soup() {
+  const worker = await createWorker();
+  const router = await worker.createRouter({ mediaCodecs });
+  io.emit("rtp-capabilities", router.rtpCapabilities);
+  const webRtcServer = await worker.createWebRtcServer(wrtcConfig);
+}
+
+soup();
 
 const PORT = process.env.PORT || 5000;
 
