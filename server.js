@@ -30,7 +30,7 @@ const client = new MongoClient(uri, {
   serverApi: ServerApiVersion.v1,
 });
 
-// Room Socket Connections
+// Room DB methods
 const addRoom = async (room) => {
   try {
     await client.connect();
@@ -64,6 +64,9 @@ const addParticipant = async (roomId, participant) => {
   return await currentRoom;
 };
 
+console;
+
+// Room Socket Connections
 io.on("connection", (socket) => {
   socket.on("client-connected", (message) => {
     const participant = {
@@ -94,6 +97,7 @@ io.on("connection", (socket) => {
       offer: message.offer,
     });
   });
+  soup(socket);
 });
 
 // Mediasoup media server
@@ -121,24 +125,36 @@ const wrtcConfig = {
     {
       protocol: "udp",
       ip: "127.0.0.1",
-      port: 20000,
+      port: 3002,
     },
     {
       protocol: "tcp",
       ip: "127.0.0.1",
-      port: 20000,
+      port: 3003,
     },
   ],
 };
 
-async function soup() {
+async function soup(socket) {
   const worker = await createWorker();
   const router = await worker.createRouter({ mediaCodecs });
-  io.emit("rtp-capabilities", router.rtpCapabilities);
+  socket.broadcast.emit("rtp-capabilities", router.rtpCapabilities);
   const webRtcServer = await worker.createWebRtcServer(wrtcConfig);
+
+  const transport = await router.createWebRtcTransport({
+    webRtcServer: webRtcServer,
+    listenIps: [{ ip: "192.168.0.111", announcedIp: "88.12.10.41" }],
+    enableUdp: true,
+    enableTcp: true,
+    preferUdp: true,
+  });
+
+  console.log(transport);
 }
 
-soup();
+app.get("/", (req, res) => {
+  res.send("whatup");
+});
 
 const PORT = process.env.PORT || 5000;
 
