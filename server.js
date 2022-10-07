@@ -21,6 +21,29 @@ const {
   parseScalabilityMode,
 } = require("mediasoup");
 
+let worker;
+let webRtcServer;
+
+async function soupInit() {
+  worker = await createWorker();
+  webRtcServer = await worker.createWebRtcServer({
+    listenInfos: [
+      {
+        protocol: "udp",
+        ip: "127.0.0.1",
+        port: 20000,
+      },
+      {
+        protocol: "tcp",
+        ip: "127.0.0.1",
+        port: 20000,
+      },
+    ],
+  });
+}
+
+soupInit();
+
 // Connecting to MongoDB
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const uri = process.env.DB_URL;
@@ -82,6 +105,7 @@ io.on("connection", (socket) => {
       const getRoom = async () => {
         const room = await addParticipant(message.roomId, participant);
         io.to(participant.clientId).emit("room-name", room.value.roomName);
+        console.log("sent");
       };
       getRoom();
     } else if (message.roomName) {
@@ -92,6 +116,7 @@ io.on("connection", (socket) => {
       };
       addRoom(room);
     }
+
     socket.broadcast.to(message.roomId).emit("user-connected", {
       message: `user ${message.clientId} username:${message.clientName} has joined the room`,
       offer: message.offer,
@@ -120,26 +145,10 @@ const mediaCodecs = [
   },
 ];
 
-const wrtcConfig = {
-  listenInfos: [
-    {
-      protocol: "udp",
-      ip: "127.0.0.1",
-      port: 3002,
-    },
-    {
-      protocol: "tcp",
-      ip: "127.0.0.1",
-      port: 3003,
-    },
-  ],
-};
-
 async function soup(socket) {
-  const worker = await createWorker();
+  console.log("start");
   const router = await worker.createRouter({ mediaCodecs });
   socket.broadcast.emit("rtp-capabilities", router.rtpCapabilities);
-  const webRtcServer = await worker.createWebRtcServer(wrtcConfig);
 
   const transport = await router.createWebRtcTransport({
     webRtcServer: webRtcServer,
@@ -148,8 +157,6 @@ async function soup(socket) {
     enableTcp: true,
     preferUdp: true,
   });
-
-  console.log(transport);
 }
 
 app.get("/", (req, res) => {
