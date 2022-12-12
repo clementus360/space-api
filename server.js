@@ -11,39 +11,6 @@ const io = require("socket.io")(server, {
   },
 });
 
-const {
-  types,
-  version,
-  observer,
-  createWorker,
-  createRouter,
-  getSupportedRtpCapabilities,
-  parseScalabilityMode,
-} = require("mediasoup");
-
-let worker;
-let webRtcServer;
-
-async function soupInit() {
-  worker = await createWorker();
-  webRtcServer = await worker.createWebRtcServer({
-    listenInfos: [
-      {
-        protocol: "udp",
-        ip: "127.0.0.1",
-        port: 20000,
-      },
-      {
-        protocol: "tcp",
-        ip: "127.0.0.1",
-        port: 20000,
-      },
-    ],
-  });
-}
-
-soupInit();
-
 // Connecting to MongoDB
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const uri = process.env.DB_URL;
@@ -87,8 +54,6 @@ const addParticipant = async (roomId, participant) => {
   return await currentRoom;
 };
 
-console;
-
 // Room Socket Connections
 io.on("connection", (socket) => {
   socket.on("client-connected", (message) => {
@@ -106,6 +71,7 @@ io.on("connection", (socket) => {
         const room = await addParticipant(message.roomId, participant);
         io.to(participant.clientId).emit("room-name", room.value.roomName);
         console.log("sent");
+        console.log(room);
       };
       getRoom();
     } else if (message.roomName) {
@@ -122,42 +88,9 @@ io.on("connection", (socket) => {
       offer: message.offer,
     });
   });
-  soup(socket);
 });
 
 // Mediasoup media server
-const mediaCodecs = [
-  {
-    kind: "audio",
-    mimeType: "audio/opus",
-    clockRate: 48000,
-    channels: 2,
-  },
-  {
-    kind: "video",
-    mimeType: "video/H264",
-    clockRate: 90000,
-    parameters: {
-      "packetization-mode": 1,
-      "profile-level-id": "42e01f",
-      "level-asymmetry-allowed": 1,
-    },
-  },
-];
-
-async function soup(socket) {
-  console.log("start");
-  const router = await worker.createRouter({ mediaCodecs });
-  socket.broadcast.emit("rtp-capabilities", router.rtpCapabilities);
-
-  const transport = await router.createWebRtcTransport({
-    webRtcServer: webRtcServer,
-    listenIps: [{ ip: "192.168.0.111", announcedIp: "88.12.10.41" }],
-    enableUdp: true,
-    enableTcp: true,
-    preferUdp: true,
-  });
-}
 
 app.get("/", (req, res) => {
   res.send("whatup");
