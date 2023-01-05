@@ -9,6 +9,7 @@ const io = require("socket.io")(server, {
     origin: [
       "http://127.0.0.1:3000",
       "https://space-1hnzjaucs-clementus360.vercel.app",
+      "https://space-ruddy.vercel.app",
     ],
     methods: ["GET", "POST"],
   },
