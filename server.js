@@ -12,6 +12,8 @@ const io = require("socket.io")(server, {
       "https://space-ruddy.vercel.app",
     ],
     methods: ["GET", "POST"],
+    allowedHeaders: ["access-token"],
+    credentials: true,
   },
 });
 
