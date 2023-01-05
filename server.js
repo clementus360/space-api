@@ -6,7 +6,10 @@ const app = express();
 const server = createServer(app);
 const io = require("socket.io")(server, {
   cors: {
-    origin: "http://127.0.0.1:3000",
+    origin: [
+      "http://127.0.0.1:3000",
+      "https://space-1hnzjaucs-clementus360.vercel.app",
+    ],
     methods: ["GET", "POST"],
   },
 });
