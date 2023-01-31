@@ -1,30 +1,6 @@
 // Mediasoup Initialisation
 const mediasoup = require("mediasoup");
 
-// const mediaCodecs = [
-//   {
-//     kind: "audio",
-//     mimeType: "audio/opus",
-//     clockRate: 48000,
-//     channels: 2,
-//     rtcpFeedback: [{ type: "transport-cc", parameter: "" }],
-//     parameters: {},
-//   },
-//   {
-//     kind: "video",
-//     mimeType: "video/H264",
-//     clockRate: 90000,
-//     parameters: { "level-asymmetry-allowed": 1 },
-//     rtcpFeedback: [
-//       { type: "nack", parameter: "" },
-//       { type: "nack", parameter: "pli" },
-//       { type: "ccm", parameter: "fir" },
-//       { type: "goog-remb", parameter: "" },
-//       { type: "transport-cc", parameter: "" },
-//     ],
-//   },
-// ];
-
 const mediaCodecs = [
   {
     mimeType: "audio/opus",

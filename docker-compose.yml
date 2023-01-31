@@ -1,0 +1,21 @@
+version: "3"
+
+services:
+  express:
+      image: ysf465639310/mediasoup-demo-cloud:v2
+      network_mode: "host"
+      build:
+        context: .
+      ports:
+        - "5000:5000"
+        - "30000-30100:30000-30100"
+        - "2000-2020:2000-2020"
+      environment:
+        DB_URL: "mongodb+srv://SpaceAdmin:FUJvUvqqV4R7zmCy@cluster0.tnuyvvd.mongodb.net/test"
+        PORT: "5000"
+      volumes:
+        - ./:/app
+networks:
+  host:
+    name: host
+    external: true

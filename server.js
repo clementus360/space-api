@@ -76,10 +76,14 @@ const addParticipant = async (roomId, participant) => {
 let webRtcServer;
 let Routers = [];
 
-const worker = initializeWorker().then((worker) => {
-  webRtcServer = initializeWebRTCServer(worker);
-  return worker;
-});
+const worker = initializeWorker()
+  .then((worker) => {
+    webRtcServer = initializeWebRTCServer(worker);
+    return worker;
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 
 // Room Socket Connections
 io.on("connection", (socket) => {
